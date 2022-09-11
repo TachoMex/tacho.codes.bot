@@ -17,6 +17,6 @@ end
 namespace :db do
   desc 'Run database migrations'
   task :migrate do
-    Kybus::Bot::Migrator.run_migrations!(Sequel.connect('sqlite://storage/charrobot.db'))
+    Kybus::Bot::Migrator.run_migrations!(Sequel.connect('mysql2://root:root@db/charrobot'))
   end
 end

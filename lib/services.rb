@@ -31,6 +31,7 @@ module Services
       @bot ||= begin
         bot = Charrobot::Base.new(Services.conf['bots']['main'])
         Charrobot::Commands.bot_register(bot)
+        # bot.register(:feature_flags, :clarifications, Services.conf['omega'].fetch('clars', true))
         bot
       end
     end

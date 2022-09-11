@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  charrobot:
+    build: .
+    depends_on:
+      - db
+    volumes:
+      - ./config:/app/config
+  db:
+    image: 'mysql:5.7'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: charrobot
+    volumes:
+      - my-datavolume:/var/lib/mysql
+      - ./init_database.sql:/docker-entrypoint-initdb.d/init_db.sql
+    ports:
+      - 3307:3306
+
+volumes:
+  my-datavolume:

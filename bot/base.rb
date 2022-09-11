@@ -54,6 +54,7 @@ module Charrobot
         puts "Backtrace:\n\t#{e.backtrace.join("\n\t")}"
       end
       clar_notif = proc do |question|
+        # return unless resource(:feature_flags, :clarifications)
         send_message(clarif_to_message(question), master_channel)
        rescue StandardError => e
          puts "Error during processing: #{$!}"
