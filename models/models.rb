@@ -1,5 +1,0 @@
-require_relative 'user'
-require_relative 'bot_channel'
-require_relative 'contest'
-require_relative 'channel_setting'
-require_relative 'role'

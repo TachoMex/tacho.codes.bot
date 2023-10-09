@@ -9,7 +9,11 @@ require 'sequel'
 require 'omega'
 require 'amazing_print'
 require 'telegram/bot'
-# require './lib/models/migrations/001_create_reminders_table'
+
+require_relative '../db/models/user'
+require_relative '../db/models/user_contest_relationship'
+require_relative '../db/models/channel'
+require_relative '../db/models/contest'
 
 module Services
   class << self
@@ -20,20 +24,39 @@ module Services
       @conf_manager = Kybus::Configuration.auto_load!
       @conf = @conf_manager.configs
       @services = @conf_manager.all_services
-      ActiveRecord::Base.establish_connection(@conf['database'])
     end
 
+    def setup_active_record!
+      ActiveRecord::Base.establish_connection(@conf['active_record'])
+    end
+
+    # :nocov:
     def omega
-      @omega ||= Omega::Client.new(@conf['omega'])
+      @omega ||= begin
+        omega = Omega::Client.new(@conf['omega'])
+        omega.login
+        omega
+      end
     end
 
     def bot
       @bot ||= begin
         bot = Charrobot::Base.new(Services.conf['bots']['main'])
-        Charrobot::Commands.bot_register(bot)
-        # bot.register(:feature_flags, :clarifications, Services.conf['omega'].fetch('clars', true))
+        Charrobot::Base.register(:omega, omega)
         bot
       end
+    end
+    # :nocov:
+
+    def run_migrations!
+      require 'active_record/tasks/database_tasks'
+      require 'kybus/bot/migrator'
+      Kybus::Bot::Migrator.run_migrations!(Services.bot_database)
+      ActiveRecord::Tasks::DatabaseTasks.migrate
+    end
+
+    def bot_database
+      @bot_database ||= Sequel.connect(Services.conf['bots']['main']['state_repository']['endpoint'])
     end
   end
 end

@@ -16,7 +16,7 @@ bots:
 database:
   adapter: 'sqlite3'
   database: charrobot-data.db
-features: []
+features: {}
 logger:
   stdout: yes
   severity: debug

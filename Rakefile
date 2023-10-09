@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 require 'rake/testtask'
-require './lib/services'
-require 'kybus/bot/migrator'
 
-Services.configure_services!
 task default: :test
 
 Rake::TestTask.new do |t|
@@ -17,6 +14,9 @@ end
 namespace :db do
   desc 'Run database migrations'
   task :migrate do
-    Kybus::Bot::Migrator.run_migrations!(Sequel.connect('mysql2://root:root@db/charrobot'))
+    require './lib/services'
+    Services.configure_services!
+
+    Services.run_migrations!
   end
 end
