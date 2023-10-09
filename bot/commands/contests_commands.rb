@@ -22,7 +22,7 @@ module ContestsCommands
       if contests.empty?
         send_message <<~NOCONTEST
           No hay concursos próximos.
-          #{user.allow_newsletter ? 'Activa las notificaciones para mantenerte al pendiente /quiero_recibir_notificaciones' : ''}
+          #{user.allow_newsletter ? 'Activa las notificaciones para mantenerte al pendiente /quiero_recibir_anuncios' : ''}
           #{user.admin ? '/agregar_concurso' : ''}
         NOCONTEST
       else

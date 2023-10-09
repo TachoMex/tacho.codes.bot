@@ -1,5 +1,5 @@
 autoconfig:
-  envprefix: OMIBOT
+  env_prefix: OMIBOT
   pretty_load: true
   default_files:
     - ./config/config.yaml.default

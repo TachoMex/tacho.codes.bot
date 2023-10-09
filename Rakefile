@@ -16,7 +16,6 @@ namespace :db do
   task :migrate do
     require './lib/services'
     Services.configure_services!
-
     Services.run_migrations!
   end
 end

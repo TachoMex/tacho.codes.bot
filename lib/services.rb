@@ -24,6 +24,7 @@ module Services
       @conf_manager = Kybus::Configuration.auto_load!
       @conf = @conf_manager.configs
       @services = @conf_manager.all_services
+      setup_active_record!
     end
 
     def setup_active_record!

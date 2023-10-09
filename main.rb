@@ -13,5 +13,9 @@ if __FILE__ == $PROGRAM_NAME
     puts e.message
     raise
   end
+elsif $PROGRAM_NAME.end_with? 'sidekiq'
+  Services.configure_services!
+  Services.bot
 end
+
 #:nocov:

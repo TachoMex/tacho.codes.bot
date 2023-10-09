@@ -1,0 +1,6 @@
+.bundle/*
+coverage/*
+storage/*
+application.log
+config/config.yaml
+.env

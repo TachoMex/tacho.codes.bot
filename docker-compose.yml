@@ -1,23 +1,60 @@
 version: "3.7"
 services:
-  charrobot:
+  charrobot: &bot_base
     build: .
     depends_on:
       - db
-    volumes:
-      - ./config:/app/config
-  db:
-    image: 'mysql:5.7'
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USERNAME: root
-      MYSQL_PASSWORD: root
-      MYSQL_DATABASE: charrobot
-    volumes:
-      - my-datavolume:/var/lib/mysql
-      - ./init_database.sql:/docker-entrypoint-initdb.d/init_db.sql
+      OMIBOT_ACTIVE_RECORD__ADAPTER: postgresql
+      OMIBOT_ACTIVE_RECORD__HOST: db
+      OMIBOT_ACTIVE_RECORD__USER: postgres
+      OMIBOT_ACTIVE_RECORD__PASSWORD: postgres
+      OMIBOT_ACTIVE_RECORD__DATABASE: charrobot
+      OMIBOT_ACTIVE_RECORD__POOL: 10
+      OMIBOT_BOTS__MAIN__STATE_REPOSITORY__NAME: sequel
+      OMIBOT_BOTS__MAIN__STATE_REPOSITORY__ENDPOINT__HOST: db
+      OMIBOT_BOTS__MAIN__STATE_REPOSITORY__ENDPOINT__USER: postgres
+      OMIBOT_BOTS__MAIN__STATE_REPOSITORY__ENDPOINT__PASSWORD: postgres
+      OMIBOT_BOTS__MAIN__STATE_REPOSITORY__ENDPOINT__ADAPTER: postgres
+      OMIBOT_BOTS__MAIN__STATE_REPOSITORY__ENDPOINT__DATABASE: charrobot-data
+      OMIBOT_BOTS__MAIN__INLINE_ARGS: true
+      OMIBOT_BOTS__MAIN__POOL_SIZE: 1
+      OMIBOT_BOTS__MAIN__SIDEKIQ: true
+      REDIS_URL: redis://redis:6379
+    env_file: .env
+    restart: always
+  db:
+    image: postgres:15.4-alpine
+    restart: always
+    healthcheck:
+      test: "pg_isready --username=postgres && psql --username=postgres --list"
+      timeout: 10s
+      retries: 20
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    # ports:
+    #   - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+      - ./init_database:/docker-entrypoint-initdb.d/
+  sidekiq:
+    <<: *bot_base
+    entrypoint: bundle exec sidekiq -r ./main.rb
+    depends_on:
+      - db
+      - redis
+  redis:
+    image: redis
+    command: redis-server
     ports:
-      - 3307:3306
+      - "6379:6379"
+    volumes:
+      - redis:/var/lib/redis/data
+
 
 volumes:
-  my-datavolume:
+  db:
+    driver: local
+  redis:
+    driver: local

@@ -2,7 +2,7 @@ FROM ruby:3.1.2-alpine as builder
 
 RUN bundle config --global frozen 1 && \
     bundle config set without 'test development' && \
-    apk add --no-cache --update build-base tzdata yarn openssl mysql-dev git
+    apk add --no-cache --update build-base tzdata yarn openssl libpq-dev git
 RUN mkdir -p /app
 WORKDIR /app
 COPY Gemfile Gemfile.lock /app/

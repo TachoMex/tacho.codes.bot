@@ -1,2 +1,0 @@
-CREATE DATABASE IF NOT EXISTS `charrobot`;
-CREATE DATABASE IF NOT EXISTS `charrobot-data`;

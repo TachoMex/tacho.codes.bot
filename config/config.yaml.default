@@ -13,9 +13,9 @@ bots:
     channels:
       master: REPLACE_ME # Currently, the bot only allows messages from the master channel.
                          # You need to know your channel/group id.
-database:
-  adapter: 'sqlite3'
-  database: charrobot-data.db
+active_record:
+  adapter: REPLACE_ME # 'sqlite3'
+  database: REPLACE_ME # charrobot-data.db
 features: {}
 logger:
   stdout: yes
