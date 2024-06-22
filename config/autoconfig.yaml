@@ -1,0 +1,6 @@
+autoconfig:
+  env_prefix: COMPETITIVE_PROGRAMMING_BOT
+  default_files:
+    - ./config/config.default.yaml
+  files:
+    - ./config/config.yaml
