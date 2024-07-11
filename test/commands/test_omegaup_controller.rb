@@ -12,7 +12,7 @@ class TestOmegaupController < BotTest
     problem_alias: 'some-problem',
     message: 'tengo un problema',
     clarification_id: 123
-  }
+  }.freeze
 
   def test_administer_contest_without_admin_group
     @bot.receives('/iniciar')

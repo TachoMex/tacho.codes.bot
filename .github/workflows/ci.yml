@@ -1,0 +1,33 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3' # Cambia esto a la versión de Ruby que estés usando
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Run unit tests
+      run: bundle exec rake test
+
+    # - name: run rubycritic
+    #   run: gem install rubycritic && rubycritic commands helpers models config_loaders --no-browser -s 90

@@ -11,7 +11,7 @@ class CompetitiveProgrammingBot < Kybus::Bot::Base
   helpers(CoreHelpers)
 
   def initialize(configs)
-    super(configs)
+    super
     UserController.register_commands(self)
     OmegaupController.register_commands(self)
   end

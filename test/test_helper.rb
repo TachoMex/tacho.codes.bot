@@ -31,7 +31,7 @@ class BotTest < Minitest::Test
   def set_contest(contest = 'concurso_test')
     @bot.receives('/iniciar')
     @bot.metadata[:current_contest] = contest
-    @bot.metadata[:observe_contest] = {start_time:  Time.now.to_i - 100, finish_time: Time.now.to_i + 100 }
+    @bot.metadata[:observe_contest] = { start_time: Time.now.to_i - 100, finish_time: Time.now.to_i + 100 }
     @bot.metadata[:idempotency_token] = 123
     @bot.save_metadata!
     stub_omega(:post, '/api/contest/details/', "contest_alias=#{contest}")
