@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module UserCommands
+module UserController
   DEFAUL_LANG = 'es'
   FAIR_USE = <<~FAIRUSE.strip
     AVISO DE PRIVACIDAD
@@ -36,10 +36,10 @@ module UserCommands
         Escuela: #{metadata[:school] || 'Sin datos'}. /agregar_escuela
         Quiero aprender Karel: #{metadata[:karel_coder] ? 'Sí. /ya_no_quiero_aprender_karel' : 'No /quiero_aprender_karel'}
         Quiero aprender C++: #{metadata[:cpp_coder] ? 'Sí. /ya_no_quiero_aprender_cpp' : 'No. /quiero_aprender_cpp'}
-        Estoy suscrito a los anuncios: #{metadata[:allow_newsletter] ? 'Sí. /ya_no_quiero_recibir_anuncios' : 'No. /quiero_recibir_anuncios' }
-        Me gustaría apoyar a la comunidad clasificando problemas: #{ metadata[:problem_tagger] ? 'Sí. /ya_no_quiero_clasificar_problemas' : 'No. /quiero_clasificar_problemas' }
+        Estoy suscrito a los anuncios: #{metadata[:allow_newsletter] ? 'Sí. /ya_no_quiero_recibir_anuncios' : 'No. /quiero_recibir_anuncios'}
+        Me gustaría apoyar a la comunidad clasificando problemas: #{metadata[:problem_tagger] ? 'Sí. /ya_no_quiero_clasificar_problemas' : 'No. /quiero_clasificar_problemas'}
       MYDATA
-      )
+                  )
     end
 
     bot.register_command('/agregar_escuela', school: '¿Cuál es tu escuela?') do
@@ -117,7 +117,7 @@ module UserCommands
       send_message('De vez en cuando te vamos a mandar algunos mensajes para pedir tu ayuda. Sólo te preguntaremos sobre problemas que hayas resuelto anteriormente. Gracias por ayudar a la comunidad.')
       redirect('/mis_datos')
     end
-    
+
     bot.register_command('/ya_no_quiero_clasificar_problemas') do
       metadata[:problem_tagger] = false
       send_message('Ya no te pediremos ayuda con problemas. Cuando quieras puedes volver a ayudarnos.')
@@ -125,7 +125,7 @@ module UserCommands
     end
 
     bot.register_command('/help') do
-      send_message <<~HELP.squish.squeeze(' ').gsub('\\\\', "\n\n")
+      send_message <<~HELP
         Bienvenido al bot de aprendizaje de programación de Tacho. Puedes consultar más detalles en https://tacho.codes/bot
         Aquí podrás aprender un poco más de programación. Para iniciar el bot envía /iniciar.
         Para poder ver tus datos registrados puedes consultar con /mis_datos.

@@ -1,15 +1,29 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
-gem 'kybus-bot', github: 'tachomex/kybus', glob: 'kybus-bot/kybus-bot.gemspec', branch: 'botsidekiq'
 gem 'dynamoid'
-gem 'minitest'
-gem 'kybus-storage', github: 'tachomex/kybus', glob: 'kybus-storage/kybus-storage.gemspec', branch: 'botsidekiq'
-gem 'kybus-logger', github: 'tachomex/kybus', glob: 'kybus-logger/kybus-logger.gemspec', branch: 'botsidekiq'
+gem 'kybus-bot', '~> 0.10'
 gem 'kybus-configs'
+gem 'kybus-logger', '~> 0.3'
+gem 'kybus-storage', '~> 0.2'
+gem 'omegaup', '~> 0.5'
 gem 'rake'
 
 group :telegram do
   gem 'telegram-bot-ruby'
 end
 
-gem "rexml", "~> 3.3"
+gem 'nokogiri', '~> 1.16'
+
+gem 'httparty', '~> 0.22.0'
+
+gem 'aws-sdk-sqs', '~> 1.80'
+
+group :development do
+  gem 'minitest'
+  gem 'simplecov'
+end
+gem 'mocha', '~> 2.4', group: :development
+
+gem 'webmock', '~> 3.23', group: :development

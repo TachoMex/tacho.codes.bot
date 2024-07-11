@@ -1,4 +1,9 @@
 .kybusbotcode.zip
+.app.zip
+.deps.zip
 kybusbot.yaml
 vendor/
 config/config.yaml
+.kybuscode.zip
+storage/
+coverage/
