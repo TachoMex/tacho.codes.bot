@@ -54,7 +54,9 @@ class TestOmegaupController < BotTest
     @bot.receives('/iniciar')
     set_contest
     @bot.expects(:send_message).with('Se han activado las notificaciones')
+    @bot.expects(:minified_scoreboard).returns {}
     @bot.expects(:fork).with('contest_observer_clarif', contest: 'concurso_test', idempotency_token: anything)
+    @bot.expects(:fork).with('contest_observer_score', contest: 'concurso_test', idempotency_token: anything)
     @bot.receives('/activar_notificaciones')
   end
 
@@ -91,6 +93,8 @@ class TestOmegaupController < BotTest
   def test_deactivate_notifications
     set_contest
     @bot.save_metadata!
+    @bot.expects(:minified_scoreboard).returns({})
+    @bot.expects(:fork).twice.returns(true)
     @bot.receives('/activar_notificaciones')
     @bot.receives('/desactivar_notificaciones')
     assert_nil(@bot.metadata[:idempotency_token])
@@ -123,5 +127,61 @@ class TestOmegaupController < BotTest
     @bot.handle_job('contest_observer_clarif', { contest: 'concurso_test', idempotency_token: 123 }, @channel_id)
     OMEGAUPCLI.expects(:respond_clarif).with('123', '¿Cuál es el problema?')
     @bot.replies('¿Cuál es el problema?')
+  end
+
+  def scoreboard_entry(username, a: 0, b: 0, c: 0)
+    [username, { 'a' => a, 'b' => b, 'c' => c }]
+  end
+
+  def scoreboard_entry_omegaup(username, a: 0, b: 0, c: 0)
+    {
+      username:,
+      problems: [
+        { alias: :a, runs: 0, points: a },
+        { alias: :b, runs: 0, points: b },
+        { alias: :c, runs: 0, points: c }
+      ],
+      total: {
+        points: a + b + c
+      }
+    }
+  end
+
+  def test_scoreboard_observer
+    set_contest
+    @bot.metadata[:scoreboard] = [scoreboard_entry('test1'), scoreboard_entry('test2')].to_h
+    @bot.save_metadata!
+    stub_omega(:post, '/api/contest/scoreboard/', 'contest_alias=concurso_test', ranking: [
+                 scoreboard_entry_omegaup('test1'),
+                 scoreboard_entry_omegaup('test2', b: 100)
+               ])
+    @bot.expects(:fork_with_delay).returns(true)
+    @bot.handle_job('contest_observer_score', { contest: 'concurso_test', idempotency_token: 123 }, @channel_id)
+  end
+
+  def test_contest_changed_abort
+    set_contest
+    @bot.expects(:log_info).with('Contest changed, stopping notifications', channel: @channel_id)
+    assert_raises(::Kybus::Bot::Base::AbortError) do
+      @bot.handle_job('contest_observer_clarif', { contest: 'contest_2', idempotency_token: '123' }, @channel_id)
+    end
+  end
+
+  def test_contest_not_running_abort
+    set_contest
+    @bot.expects(:running_contest?).returns(false)
+    @bot.expects(:log_info).with('Contest not running, stopping notifications', channel: @channel_id)
+    assert_raises(::Kybus::Bot::Base::AbortError) do
+      @bot.handle_job('contest_observer_clarif', { contest: 'concurso_test', idempotency_token: 123 }, @channel_id)
+    end
+  end
+
+  def test_idempotency_token_changed_abort
+    set_contest
+    @bot.expects(:log_info).with('Idempotency token changed: 123 != token_456', channel: @channel_id)
+    assert_raises(::Kybus::Bot::Base::AbortError) do
+      @bot.handle_job('contest_observer_clarif', { contest: 'concurso_test', idempotency_token: 'token_456' },
+                      @channel_id)
+    end
   end
 end

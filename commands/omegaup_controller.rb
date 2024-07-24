@@ -32,18 +32,46 @@ module OmegaupController
     end
 
     bot.register_command('/activar_notificaciones') do
-      current_contest
+      contest = current_contest
       send_message('Se han activado las notificaciones')
       idempotency_token = Time.now.to_i
       metadata[:idempotency_token] = idempotency_token
+      metadata[:scoreboard] = minified_scoreboard(contest)
+      state.save!
       fork('contest_observer_clarif', contest: metadata[:current_contest], idempotency_token:)
+      fork('contest_observer_score', contest: metadata[:current_contest], idempotency_token:)
+    end
+
+    bot.register_job('contest_observer_score', %i[contest idempotency_token]) do
+      contest = current_contest
+      check_observing_contest!
+      time = metadata[:scoreboard_frequency] || 5
+
+      last = metadata[:scoreboard]
+      current = minified_scoreboard(contest)
+
+      last.each do |username, previous_score|
+        current_score = current[username.to_s]
+        current_score.each do |problem, score|
+          last_points = previous_score[problem.to_sym]
+          current_points = score
+          if current_points != last_points
+            msg = "#{metadata[:current_contest]}>>\n#{username} solved #{problem} with #{current_points} (+#{current_points - last_points})"
+            send_message(msg)
+          end
+        end
+      end
+
+      metadata[:scoreboard] = current
+      fork_with_delay('contest_observer_score', time * 60, contest: metadata[:current_contest],
+                                                           idempotency_token: args[:idempotency_token])
     end
 
     bot.register_job('contest_observer_clarif', %i[contest idempotency_token]) do
       contest = current_contest
-      if metadata[:current_contest] != args[:contest] || !running_contest? || metadata[:idempotency_token] != args[:idempotency_token]
-        abort
-      end
+
+      check_observing_contest!
+
       time = metadata[:clarif_frequency] || 5
       clarifications = contest.clarifications
       clarifications.select { |clar| clar[:answer].nil? || clar[:answer].empty? }

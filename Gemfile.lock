@@ -111,12 +111,17 @@ GEM
     rexml (3.3.1)
       strscan
     ruby2_keywords (0.0.5)
+    sequel (5.82.0)
+      bigdecimal
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
+    sqlite3 (2.0.2)
+      mini_portile2 (~> 2.8.0)
+    sqlite3 (2.0.2-x86_64-linux-gnu)
     strscan (3.1.0)
     telegram-bot-ruby (2.0.0)
       dry-struct (~> 1.6)
@@ -149,7 +154,9 @@ DEPENDENCIES
   nokogiri (~> 1.16)
   omegaup (~> 0.5)
   rake
+  sequel (~> 5.82)
   simplecov
+  sqlite3 (~> 2.0)
   telegram-bot-ruby
   webmock (~> 3.23)
 

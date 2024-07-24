@@ -8,7 +8,6 @@ module OmegaupHelpers
 
   def current_contest
     contest = metadata[:current_contest]
-    puts @state.to_h
     abort('Debes elegir un concurso para ser administrado antes /administrar_concurso') if contest.nil?
 
     OMEGAUPCLI.contest(contest)
@@ -35,5 +34,29 @@ module OmegaupHelpers
     OMEGAUPCLI.respond_clarif(message_id, response)
 
     send_message("Respondiendo a #{message_id}:\n#{response}")
+  end
+
+  def check_observing_contest!
+    reason = if metadata[:current_contest] != args[:contest]
+               'Contest changed, stopping notifications'
+             elsif !running_contest?
+               'Contest not running, stopping notifications'
+             elsif metadata[:idempotency_token] != args[:idempotency_token]
+               "Idempotency token changed: #{metadata[:idempotency_token]} != #{args[:idempotency_token]}"
+             end
+
+    return unless reason
+
+    log_info(reason, channel: current_channel)
+    abort
+  end
+
+  def minified_scoreboard(contest)
+    result = {}
+    scoreboard = contest.scoreboard
+    scoreboard.users.each do |user|
+      result[user.username] = user.problems.to_h { |p| [p[:alias], p[:points]] }
+    end
+    result
   end
 end

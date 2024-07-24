@@ -22,7 +22,9 @@ gem 'aws-sdk-sqs', '~> 1.80'
 
 group :development do
   gem 'minitest'
+  gem 'sequel', '~> 5.82'
   gem 'simplecov'
+  gem 'sqlite3', '~> 2.0'
 end
 gem 'mocha', '~> 2.4', group: :development
 

@@ -9,6 +9,9 @@ require_relative '../bot'
 
 CONF_MANAGER = Kybus::Configuration.auto_load!
 APP_CONF = CONF_MANAGER.configs
+
+BOT_ENV = ENV['KYBUS_BOT_ENV'] || 'main'
+
 require_relative 'db'
 require_relative 'omegaup'
 require_relative 'sqs'

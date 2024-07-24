@@ -34,6 +34,6 @@ class BotTest < Minitest::Test
     @bot.metadata[:observe_contest] = { start_time: Time.now.to_i - 100, finish_time: Time.now.to_i + 100 }
     @bot.metadata[:idempotency_token] = 123
     @bot.save_metadata!
-    stub_omega(:post, '/api/contest/details/', "contest_alias=#{contest}")
+    stub_omega(:post, '/api/contest/details/', "contest_alias=#{contest}", alias: contest)
   end
 end
